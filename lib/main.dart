@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -27,7 +29,6 @@ class CalculatorApp extends StatefulWidget {
 class _CalculatorAppState extends State<CalculatorApp> {
   @override
   Widget build(BuildContext context) {
-
     TextEditingController firstNumberController = TextEditingController();
     TextEditingController secondNumberController = TextEditingController();
     TextEditingController resultController = TextEditingController();
@@ -45,107 +46,123 @@ class _CalculatorAppState extends State<CalculatorApp> {
       body: Container(
         margin: const EdgeInsets.all(20),
         color: Colors.white,
-        child:  Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-
-             TextField(
-              controller: firstNumberController,
-              decoration: const InputDecoration(
-                labelText: 'Enter First Number',
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey, width: 0.0),
-                ),
-              ),
-              keyboardType: TextInputType.number,
+            numberInputField("Enter First Number", firstNumberController, true),
+            const SizedBox(
+              height: 20,
             ),
-
-            const SizedBox(height: 20,),
-
-             TextField(
-              controller: secondNumberController,
-              decoration: const InputDecoration(
-                labelText: 'Enter Second Number',
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey, width: 0.0),
-                ),
-              ),
-              keyboardType: TextInputType.number,
+            numberInputField(
+                "Enter Second Number", secondNumberController, true),
+            const SizedBox(
+              height: 20,
             ),
-
-            const SizedBox(height: 20,),
-
-             TextField(
-              controller: resultController,
-              enabled: false,
-              decoration: const InputDecoration(
-                labelText: 'Result',fillColor: Colors.black,
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey, width: 0.0),
-                ),
-              ),
+            numberInputField("Result", resultController, false),
+            const SizedBox(
+              height: 20,
             ),
-
-            const SizedBox(height: 20,),
-
             Row(
               children: [
-
-                ElevatedButton(onPressed: () {
-
-                  var result = int.parse(firstNumberController.text) + int.parse(secondNumberController.text);
-                  resultController.text = "$result";
-
-
-
-
-                }, child: const Text("ADD")) ,
-
-                const SizedBox(width: 10,),
-
-                ElevatedButton(onPressed: () {
-                  var result = int.parse(firstNumberController.text) - int.parse(secondNumberController.text);
-                  resultController.text = "$result";
-
-                }, child: const Text("SUB")) ,
-
-                const SizedBox(width: 10,),
-
-                ElevatedButton(onPressed: () {
-                  var result = int.parse(firstNumberController.text) * int.parse(secondNumberController.text);
-                  resultController.text = "$result";
-
-                }, child: const Text("MUL")) ,
-
-                const SizedBox(width: 10,),
-
-                ElevatedButton(onPressed: () {
-
-                  var result = double.parse(firstNumberController.text) / double.parse(secondNumberController.text);
-                  resultController.text = "$result";
-
-                }, child: const Text("DIV")) ,
-
+                myElevatedButton(firstNumberController, secondNumberController,
+                    resultController, "ADD"),
+                const SizedBox(
+                  width: 10,
+                ),
+                myElevatedButton(firstNumberController, secondNumberController,
+                    resultController, "SUB"),
+                const SizedBox(
+                  width: 10,
+                ),
+                myElevatedButton(firstNumberController, secondNumberController,
+                    resultController, "MUL"),
+                const SizedBox(
+                  width: 10,
+                ),
+                myElevatedButton(firstNumberController, secondNumberController,
+                    resultController, "DIV"),
               ],
             ),
-
-            Container(
-
+            SizedBox(
               width: double.infinity,
-
-              child: ElevatedButton(onPressed: (){
-                firstNumberController.text = "";
-                secondNumberController.text = "";
-                resultController.text = "";
-              },child: Text("CLEAR"),),
-            )
-
-
-
-
+              child: myElevatedButton(firstNumberController, secondNumberController,
+                  resultController, "CLEAR"),
+              ),
           ],
         ),
       ),
     );
   }
+}
+
+Widget numberInputField(String labelText,
+    TextEditingController textEditingController, bool isEditable) {
+  return TextField(
+    enabled: isEditable,
+    controller: textEditingController,
+    decoration: InputDecoration(
+      labelText: labelText,
+      border: const OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.grey, width: 0.0),
+      ),
+    ),
+    keyboardType: TextInputType.number,
+  );
+}
+
+Widget myElevatedButton(
+    TextEditingController firstNumberController,
+    TextEditingController secondNumberController,
+    TextEditingController resultController,
+    String labelText) {
+  return ElevatedButton(
+      onPressed: () {
+        var result = performArithmeticOperation(
+            firstNumberController, secondNumberController, resultController,labelText);
+        resultController.text = result;
+      },
+      child: Text(labelText));
+}
+
+String performArithmeticOperation(TextEditingController firstNumberController,
+    TextEditingController secondNumberController, TextEditingController resultController,String labelText) {
+  String result = "";
+
+  switch (labelText) {
+    case "ADD":
+
+      var addResult = int.parse(firstNumberController.text) + int.parse(secondNumberController.text);
+      result = addResult.toString();
+
+      break;
+
+    case "SUB":
+
+      var subResult = int.parse(firstNumberController.text) - int.parse(secondNumberController.text);
+      result = subResult.toString();
+
+      break;
+
+    case "MUL":
+
+      var mulResult = int.parse(firstNumberController.text) * int.parse(secondNumberController.text);
+      result = mulResult.toString();
+
+      break;
+
+    case "DIV":
+      var divResult = double.parse(firstNumberController.text) + double.parse(secondNumberController.text);
+      result = divResult.toString();
+      break;
+    case  "CLEAR" :
+
+      firstNumberController.text = "";
+      secondNumberController.text = "";
+      resultController.text = "";
+
+      break;
+
+  }
+
+  return result;
 }
